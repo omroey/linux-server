@@ -1,0 +1,65 @@
+Install Nginx
+   
+    
+    3  apt-get install nginx
+    4  service nginx start
+    5  service nginx status
+    6  apt-get install php-fpm php-mysql
+    7  vi /etc/nginx/sites-available/default
+	
+	
+    8  nano /etc/php/7.0/cli/php.ini
+	Once the installation is completed, edit the PHP configuration file and modify the cgi.fix_pathinfo parameter value from 1 to 0.
+	
+	cgi.fix_pathinfo=1 change to cgi.fix_pathinfo=0 dan uncommand
+	
+
+   11  nano /etc/php/7.0/cli/php.ini
+   12  systemctl restart php7.0-fpm.service
+  
+   14  systemctl status php7.0-fpm.service
+   15  nano /etc/nginx/sites-available/default
+   
+   
+server {
+        listen 80 default_server;
+        
+       root /var/www/html;
+
+        # Add index.php to the list if you are using PHP
+        index index.php index.html index.htm index.nginx-debian.html;
+
+        server_name _;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+}
+   
+   16  nginx -t
+   17  systemctl restart nginx.service
+   
+   echo "<?php phpinfo() ?>" > /var/www/html/info.php
+   
+   18  apt-get install mysql-server
+   19  mysql_secure_installation
+   20  systemctl start mysql
+   21  systemctl start mariadb
+   22  systemctl status mysql
+   23  history
